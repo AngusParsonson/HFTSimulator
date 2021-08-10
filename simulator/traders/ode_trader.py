@@ -161,7 +161,7 @@ class ODETrader(Trader):
         self.potential_stock = 0
         self.tick_num = 0
         self.orders = []
-        self.model= ODELSTM.load_from_checkpoint(__file__ + "\\..\\" + "ode_pred_50.ckpt", use_ODE=True, input_size=7, seq_len=50)
+        self.model= ODELSTM.load_from_checkpoint(__file__ + "\\..\\" + "ode_pred_20.ckpt", use_ODE=True, input_size=7, seq_len=50)
         self.model.eval()
         self.ticks = collections.deque()
         self.micros = collections.deque()
@@ -181,6 +181,7 @@ class ODETrader(Trader):
         self.mic_norm_vals = {'max_p': 0, 'min_p': float('inf')}
         self.ema_norm_vals = {'max_p': 0, 'min_p': float('inf')}
         self.ready = False
+        self.eval_times = [0.0, 0.0]
 
     def respond(self, tick):
         new_orders = []
@@ -220,12 +221,18 @@ class ODETrader(Trader):
             self.__update_norm_vals__()
             inputs, timespans = self.__gen_inputs__()
 
+            eval_start = time.time()
             output = self.model(inputs, timespans)
+            eval_end = time.time()
+            self.eval_times[0] += (eval_end - eval_start)
+            self.eval_times[1] += 1
+            # print(self.eval_times[0] / self.eval_times[1])
 
             direction = torch.argmax(output).item()
             certainty = torch.exp(output)[0][direction].item() / sum(torch.exp(output)[0])
 
             if (tick['Local time'] <= 28000 and certainty >= 0.85):
+            # if (tick['Local time'] <= 28000 and certainty >= 0.6):
                 if (direction == 2):# and self.potential_stock < 1):
                     self.twos += 1
                     self.potential_stock += tick['AskVolume']

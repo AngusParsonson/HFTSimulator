@@ -11,7 +11,7 @@ if __name__ == '__main__':
         data_loader = TradingDataLoader(__file__ + "\\..\\utils\\data\\" + day)
         traders = []
         orders = []
-        traders.append(ODETrader(init_balance=4000, pred_horizon=50))
+        traders.append(ODETrader(init_balance=4000, pred_horizon=20))
         curr_tick = data_loader.step()
         speed = float('inf')
         while(curr_tick[1]):
