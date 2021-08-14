@@ -80,7 +80,7 @@ class GBPUSDDataModule(pl.LightningDataModule):
         self.test_data = timeseries(X_test, y_test, with_time=self.with_time)
 
     def load_data(self, train_days, test_days):
-        path_to_data = r"C:\Users\Angus Parsonson\Documents\University\Fourth Year\Dissertation\data\\" + self.data_type + r"\\"
+        path_to_data = "C:/Users/Angus Parsonson/Documents/University/FourthYear/Diss/Dissertation/data/" + self.data_type + "/"
         train_dfs = []
         test_dfs = []
         for i, f in enumerate(os.listdir(path_to_data)):
@@ -232,7 +232,8 @@ class GBPUSDDataModule(pl.LightningDataModule):
         # plt.show()
         # np.set_printoptions(threshold=sys.maxsize)
         # print(np.array(X[:self.pred_horizon]))
-        print("up: " + str(up) + " , down: " + str(dwn) + ", stagnant: " + str(stag))
+        # print("up: " + str(up) + " , down: " + str(dwn) + ", stagnant: " + str(stag))
+        print("Labels Done")
         return np.array(X), np.array(Y)
 
 class LSTM(pl.LightningModule):
@@ -464,7 +465,7 @@ if __name__ == '__main__':
     print(os.getcwd())
     data_module = GBPUSDDataModule(data_type="WTB", window=50, batch_size=64, pred_horizon=50, alpha=0.0000, with_time=True)
     # model = LSTM(input_size=7, hidden_size=100, seq_len=50, num_layers=10)
-    model = ODELSTM(use_ODE=True, input_size=7, hidden_size=100, seq_len=50)
+    model = ODELSTM(use_ODE=False, input_size=7, hidden_size=100, seq_len=50)
     logger = TensorBoardLogger('tb_logs', name='ode_logs')
     trainer = pl.Trainer(max_epochs=1, logger=logger)
 
